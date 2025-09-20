@@ -39,8 +39,8 @@ jobs:
     - name: Test
       working-directory: ${{ steps.strings.outputs.build-output-dir }}
       run: |
-        # Check if the Library USGS_M2M_C++ is created
-        if [ -f "USGS_M2M_C++.so" ]; then
+        # Check if the Library libusgsm2mcpp.so is created
+        if [ -f "libusgsm2mcpp.so" ]; then
           echo "Test passed: Library generated successfully."
         else
           echo "Test failed: Library not generated."
