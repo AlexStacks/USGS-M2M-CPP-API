@@ -1,0 +1,56 @@
+name: CMake on Ubuntu with GCC
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y nlohmann-json3-dev libcurl4-openssl-dev
+
+    - name: Set reusable strings
+      id: strings
+      shell: bash
+      run: |
+        echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+
+    - name: Configure CMake
+      run: >
+        cmake -B ${{ steps.strings.outputs.build-output-dir }}
+        -DCMAKE_CXX_COMPILER=g++
+        -DCMAKE_C_COMPILER=gcc
+        -DCMAKE_BUILD_TYPE=Release
+        -S ${{ github.workspace }}
+
+    - name: Build
+      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config Release
+
+    - name: Test
+      working-directory: ${{ steps.strings.outputs.build-output-dir }}
+      run: |
+        # Check if the Library USGS_M2M_C++ is created
+        if [ -f "USGS_M2M_C++.so" ]; then
+          echo "Test passed: Library generated successfully."
+        else
+          echo "Test failed: Library not generated."
+          exit 1
+        fi
+
+    - name: Upload build binaries
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-artifacts
+        path: |
+          ${{ steps.strings.outputs.build-output-dir }}/*
+          inc/usgsm2m.hpp
