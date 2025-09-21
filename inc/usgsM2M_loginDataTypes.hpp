@@ -1,29 +1,11 @@
 /// @author Alexander Stackpoole
 /// @date 9/20/25
-/// @brief Data types for USGS M2M API responses
+/// @brief Data types for Logging in and out with the USGS M2M API
 
-#ifndef USGSM2MDATATYPES_HPP
-#define USGSM2MDATATYPES_HPP
+#ifndef USGSM2M_LOGINDATATYPES_HPP
+#define USGSM2M_LOGINDATATYPES_HPP
 
-#include <iostream>
-#include <string>
-#include <optional>
-
-/// Various structs for all API calls
-struct ErrorResponse {
-    std::string errorMessage;
-    std::optional<int> errorCode;
-};
-
-struct UserContext {
-    std::string contactId;
-    std::string ipAddress;
-};
-
-struct MetaDataResponse {
-    int requestId = -1;
-    int sessionId = -1;
-};
+#include "usgsM2M_commonDataTypes.hpp"
 
 struct LoginAppGuestResponse {
     std::string data;
@@ -52,4 +34,4 @@ struct LogoutResponse {
     bool success = false;
 };
 
-#endif //USGSM2MDATATYPES_HPP
+#endif //USGSM2M_LOGINDATATYPES_HPP

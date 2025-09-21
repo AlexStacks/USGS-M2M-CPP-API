@@ -6,10 +6,10 @@
 #ifndef USGSM2M_HPP
 #define USGSM2M_HPP
 
-#include "usgsM2MDataTypes.hpp"
-
 #include <curl/curl.h>
 #include <nlohmann/json.hpp>
+
+#include "usgsM2M_loginDataTypes.hpp"
 
 class USGS_M2M_API {
 public:
