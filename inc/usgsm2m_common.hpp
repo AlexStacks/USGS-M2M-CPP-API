@@ -2,8 +2,8 @@
 /// @date 9/20/25
 /// @brief Common Data types for USGS M2M API responses
 
-#ifndef USGSM2M_COMMONDATATYPES_HPP
-#define USGSM2M_COMMONDATATYPES_HPP
+#ifndef USGSM2M_COMMON_HPP
+#define USGSM2M_COMMON_HPP
 
 #include <iostream>
 #include <string>
@@ -25,4 +25,4 @@ struct MetaDataResponse {
     int sessionId = -1;
 };
 
-#endif //USGSM2M_COMMONDATATYPES_HPP
+#endif //USGSM2M_COMMON_HPP

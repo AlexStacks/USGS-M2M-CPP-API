@@ -3,6 +3,7 @@ project(usgsm2mcpp)
 
 set(usgsM2M_Sources
     src/usgsm2m.cpp
+    src/usgsm2m_login.cpp
 )
 
 add_library(usgsm2mcpp SHARED ${usgsM2M_Sources})

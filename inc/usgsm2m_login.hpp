@@ -2,10 +2,10 @@
 /// @date 9/20/25
 /// @brief Data types for Logging in and out with the USGS M2M API
 
-#ifndef USGSM2M_LOGINDATATYPES_HPP
-#define USGSM2M_LOGINDATATYPES_HPP
+#ifndef USGSM2M_LOGIN_HPP
+#define USGSM2M_LOGIN_HPP
 
-#include "usgsM2M_commonDataTypes.hpp"
+#include "usgsm2m_common.hpp"
 
 struct LoginAppGuestResponse {
     std::string data;
@@ -34,4 +34,4 @@ struct LogoutResponse {
     bool success = false;
 };
 
-#endif //USGSM2M_LOGINDATATYPES_HPP
+#endif //USGSM2M_LOGIN_HPP
