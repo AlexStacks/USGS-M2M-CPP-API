@@ -15,6 +15,11 @@ struct ErrorResponse {
     std::optional<int> errorCode;
 };
 
+struct UserContext {
+    std::string contactId;
+    std::string ipAddress;
+};
+
 struct MetaDataResponse {
     int requestId = -1;
     int sessionId = -1;
@@ -31,6 +36,19 @@ struct LoginTokenResponse {
     std::string data;
     ErrorResponse errorData;
     MetaDataResponse metaData;
+    bool success = false;
+};
+
+struct LoginSSOResponse {
+    std::string apiKey;
+    std::string username;
+    ErrorResponse errorData;
+    MetaDataResponse metaData;
+    bool success = false;
+};
+
+struct LogoutResponse {
+    ErrorResponse errorData;
     bool success = false;
 };
 
