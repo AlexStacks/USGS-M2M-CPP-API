@@ -1,8 +1,10 @@
 /// @author Alexander Stackpoole
 /// @date 9/20/25
-/// @brief Implementation of USGS_M2M_API class methods (updated safe getters)
+/// @brief Implementation of the USGS M2M C++ basic functionality and helper functions.
 
 #include "usgsm2m.hpp"
+#include <iomanip>
+#include <sstream>
 
 USGS_M2M_API::USGS_M2M_API() {
     setup_curl();
@@ -122,15 +124,49 @@ bool USGS_M2M_API::jsonErrorParsing(nlohmann::json& jsonResponse, ErrorResponse&
 void USGS_M2M_API::jsonMetaDataParsing(nlohmann::json& jsonResponse, MetaDataResponse& metaData) {
     metaData.requestId = safeGetIntOpt(jsonResponse, "requestId").value_or(0);
     metaData.sessionId = safeGetIntOpt(jsonResponse, "sessionId").value_or(0);
+    metaData.version = safeGetStringOpt(jsonResponse, "version");
 }
 
-std::string USGS_M2M_API::safeGetString(const nlohmann::json& j, const std::string& key) const {
-    return safeGetStringOpt(j, key).value_or("");
-}
+DefaultResponse USGS_M2M_API::defaultJsonResponseParsing(const std::string& url, nlohmann::json& jsonResponse, const std::string& jsonPayload) {
+    DefaultResponse result;
 
-std::optional<std::string> USGS_M2M_API::safeGetStringOpt(const nlohmann::json& j, const std::string& key) const {
-    if (j.contains(key) && j[key].is_string()) return j[key].get<std::string>();
-    return std::nullopt;
+    std::string responseBody;
+    long httpCode = 0;
+
+    if(jsonPayload.empty()){
+        result.success = performJsonGetRequest(url, responseBody, httpCode);
+    }
+    else{
+        result.success = performJsonPostRequest(url, jsonPayload, responseBody, httpCode);
+    }
+    // Parse JSON response
+    try {
+        jsonResponse = nlohmann::json::parse(responseBody);
+    } catch (const std::exception& e) {
+        result.errorData.errorCode = -1;
+        result.errorData.errorMessage = std::string("JSON parse error: ") + e.what();
+        result.success = false;
+        return result;
+    }
+
+    if(!httpRequestSuccessful(httpCode, result.success, result.errorData)) {
+        return result;
+    }
+
+    if(!jsonErrorParsing(jsonResponse, result.errorData, result.success)) {
+        return result;
+    }
+
+    jsonMetaDataParsing(jsonResponse, result.metaData);
+
+    // Parse JSON Data field
+    if(jsonResponse.contains("data") && !jsonResponse["data"].is_null()) {
+        result.data = jsonResponse["data"];
+    }else{
+        result.success = false;
+    }
+
+    return result;
 }
 
 std::optional<int> USGS_M2M_API::safeGetIntOpt(const nlohmann::json& j, const std::string& key) const {
@@ -143,43 +179,16 @@ std::optional<int> USGS_M2M_API::safeGetIntOpt(const nlohmann::json& j, const st
     return std::nullopt;
 }
 
-int USGS_M2M_API::safeGetInt(const nlohmann::json& j, const std::string& key) const {
-    return safeGetIntOpt(j, key).value_or(0);
-}
-
-std::optional<bool> USGS_M2M_API::safeGetBoolOpt(const nlohmann::json& j, const std::string& key) const {
-    if (!j.contains(key)) return std::nullopt;
-    if (j[key].is_boolean()) return j[key].get<bool>();
-    if (j[key].is_number_integer()) return j[key].get<int>() != 0;
-    if (j[key].is_string()) {
-        std::string val = j[key].get<std::string>();
-        return val == "true" || val == "1";
-    }
+std::optional<std::string> USGS_M2M_API::safeGetStringOpt(const nlohmann::json& j, const std::string& key) const {
+    if (j.contains(key) && j[key].is_string()) return j[key].get<std::string>();
     return std::nullopt;
 }
 
-bool USGS_M2M_API::safeGetBool(const nlohmann::json& j, const std::string& key) const {
-    return safeGetBoolOpt(j, key).value_or(false);
-}
+std::string USGS_M2M_API::timeToISO8601UTC(time_t t) {
+    std::tm tm_utc;
+    gmtime_r(&t, &tm_utc); // POSIX thread-safe
 
-std::vector<std::string> USGS_M2M_API::parseStringArray(const nlohmann::json& j, const std::string& key) const {
-    std::vector<std::string> result;
-    if(j.contains(key) && j[key].is_array()) {
-        for(const auto& item : j[key]) if(item.is_string()) result.push_back(item.get<std::string>());
-    }
-    return result;
-}
-
-std::optional<SpatialBounds> USGS_M2M_API::parseSpatialBounds(const nlohmann::json& j) const {
-    if(!j.is_object()) return std::nullopt;
-    if(j.contains("east") && j.contains("west") && j.contains("north") && j.contains("south") &&
-       j["east"].is_number() && j["west"].is_number() && j["north"].is_number() && j["south"].is_number()) {
-        return SpatialBounds{
-            j["east"].get<double>(),
-            j["west"].get<double>(),
-            j["north"].get<double>(),
-            j["south"].get<double>()
-        };
-    }
-    return std::nullopt;
+    std::ostringstream oss;
+    oss << std::put_time(&tm_utc, "%FT%TZ"); // ISO 8601 UTC format
+    return oss.str();
 }

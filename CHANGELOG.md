@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.0.3] - 2025-07-18
+
+### Added
+
+- All USGS M2M Functionality
+- Helper functions that were needed.
+- All extra files.
+
 ## [0.0.2] - 2025-07-18
 
 ### Added

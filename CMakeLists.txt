@@ -3,7 +3,12 @@ project(usgsm2mcpp)
 
 set(usgsM2M_Sources
     src/usgsm2m.cpp
+    src/usgsm2m_dataset.cpp
+    src/usgsm2m_download.cpp
     src/usgsm2m_login.cpp
+    src/usgsm2m_misc.cpp
+    src/usgsm2m_scene.cpp
+    src/usgsm2m_tram.cpp
 )
 
 add_library(usgsm2mcpp SHARED ${usgsM2M_Sources})
@@ -13,7 +18,7 @@ target_include_directories(usgsm2mcpp PRIVATE
 "${CMAKE_CURRENT_SOURCE_DIR}/inc" 
 )
 
-set_target_properties(usgsm2mcpp PROPERTIES VERSION "0.0.2")
+set_target_properties(usgsm2mcpp PROPERTIES VERSION "0.0.3")
 
 target_link_libraries(usgsm2mcpp
     -lcurl
