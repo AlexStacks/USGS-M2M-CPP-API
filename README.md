@@ -11,6 +11,10 @@ Please note that users will need to login before sending any commands and set th
 
 It is recommended to logout when the session is finished.
 
+## WARNING
+
+Please note that not all of these API calls have been full tested. Please be careful when sending API calls to the USGS as they are providing a great free service by allowing this M2M API. Before using this API please make sure to review the functions that you are calling to make sure they are as expected.
+
 ## Output
 
 - The build will create a shared library - usgsm2mcpp.so
