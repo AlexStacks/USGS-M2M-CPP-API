@@ -53,5 +53,4 @@ jobs:
         name: build-artifacts
         path: |
           ${{ steps.strings.outputs.build-output-dir }}/*
-          inc/usgsM2M.hpp
-          inc/usgsM2MDataTypes.hpp
+          inc/usgsm2m.hpp
